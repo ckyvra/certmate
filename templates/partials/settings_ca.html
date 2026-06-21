@@ -23,6 +23,7 @@
                                     <option value="actalis">Actalis</option>
                                     <option value="digicert">DigiCert ACME</option>
                                     <option value="sslcom">SSL.com</option>
+                                    <option value="globalsign">GlobalSign</option>
                                     <option value="private_ca">Private CA</option>
                                 </select>
                                 <p class="text-xs text-muted mt-1">
@@ -256,6 +257,42 @@
                                 </div>
                                 <p class="text-xs text-indigo-700 dark:text-indigo-300 mt-2">
                                     SSL.com provides enterprise-grade SSL certificates via ACME. Requires EAB credentials.
+                                </p>
+                            </div>
+
+                            <!-- GlobalSign Configuration -->
+                            <div id="globalsign-config" class="border border-teal-300 dark:border-teal-600 rounded-lg p-4 bg-teal-50 dark:bg-teal-900/20" style="display: none;">
+                                <h4 class="text-sm font-semibold text-teal-800 dark:text-teal-200 mb-2 flex items-center">
+                                    <i class="fas fa-globe mr-2 text-teal-600"></i>
+                                    GlobalSign Configuration
+                                    <span class="ml-2 text-xs bg-teal-100 dark:bg-teal-900/30 text-teal-800 dark:text-teal-300 px-2 py-0.5 rounded-full">Enterprise</span>
+                                </h4>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs text-teal-800 dark:text-teal-200 mb-1">External Account Binding (EAB) Key ID</label>
+                                        <input type="text" id="globalsign-eab-kid"
+                                               class="w-full px-2 py-1 text-sm border border-teal-300 dark:border-teal-600 rounded bg-surface text-foreground"
+                                               placeholder="Your EAB Key ID from GlobalSign Atlas">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-teal-800 dark:text-teal-200 mb-1">External Account Binding (EAB) HMAC Key</label>
+                                        <input type="password" id="globalsign-eab-hmac"
+                                               class="w-full px-2 py-1 text-sm border border-teal-300 dark:border-teal-600 rounded bg-surface text-foreground"
+                                               placeholder="Your EAB HMAC Key from GlobalSign Atlas"
+                                               autocomplete="new-password"
+                                               spellcheck="false"
+                                               data-lpignore="true">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-teal-800 dark:text-teal-200 mb-1">Email (for notifications)</label>
+                                        <input type="email" id="globalsign-email"
+                                               class="w-full px-2 py-1 text-sm border border-teal-300 dark:border-teal-600 rounded bg-surface text-foreground"
+                                               placeholder="admin@example.com">
+                                    </div>
+                                </div>
+                                <p class="text-xs text-teal-700 dark:text-teal-300 mt-2">
+                                    GlobalSign Atlas provides enterprise-grade SSL certificates via ACME.
+                                    Generate EAB credentials in your GlobalSign Atlas portal under API Credentials.
                                 </p>
                             </div>
 

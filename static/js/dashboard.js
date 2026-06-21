@@ -1379,6 +1379,9 @@
                 case 'sslcom':
                     infoText = '<i class="fas fa-shield-alt mr-1 text-indigo-500"></i> Enterprise certificates from SSL.com (requires EAB)';
                     break;
+                case 'globalsign':
+                    infoText = '<i class="fas fa-globe mr-1 text-teal-500"></i> Enterprise certificates from GlobalSign Atlas (requires EAB)';
+                    break;
                 case 'private_ca':
                     infoText = '<i class="fas fa-building mr-1 text-purple-500"></i> Internal CA certificates (requires ACME URL configured in Settings)';
                     break;

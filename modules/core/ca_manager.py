@@ -98,6 +98,16 @@ class CAManager:
                 'supports_wildcard': False,
                 'certificate_types': ['DV'],
                 'description': 'European CA (Italy) with free 90-day DV certificates via ACME'
+            },
+            'globalsign': {
+                'name': 'GlobalSign',
+                'production_url': 'https://emea.acme.atlas.globalsign.com/directory',
+                # GlobalSign does not publish a staging/test ACME endpoint.
+                'staging_url': 'https://emea.acme.atlas.globalsign.com/directory',
+                'requires_eab': True,
+                'supports_wildcard': True,
+                'certificate_types': ['DV', 'OV'],
+                'description': 'Enterprise SSL certificates from GlobalSign Atlas'
             }
         }
     

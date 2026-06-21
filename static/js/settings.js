@@ -1917,11 +1917,12 @@
             'actalis': 'actalis-config',
             'digicert': 'digicert-config',
             'sslcom': 'sslcom-config',
+            'globalsign': 'globalsign-config',
             'private_ca': 'private-ca-config'
         };
 
         // Hide all CA configuration panels and disable their required fields
-        var caConfigs = ['letsencrypt-config', 'letsencrypt-staging-config', 'zerossl-config', 'google-ca-config', 'actalis-config', 'digicert-config', 'sslcom-config', 'private-ca-config'];
+        var caConfigs = ['letsencrypt-config', 'letsencrypt-staging-config', 'zerossl-config', 'google-ca-config', 'actalis-config', 'digicert-config', 'sslcom-config', 'globalsign-config', 'private-ca-config'];
         caConfigs.forEach(function (configId) {
             var element = document.getElementById(configId);
             if (element) {
@@ -1971,6 +1972,9 @@
                     break;
                 case 'sslcom':
                     hintElement.textContent = 'Enter EAB credentials and email, then test SSL.com connection';
+                    break;
+                case 'globalsign':
+                    hintElement.textContent = 'Enter EAB credentials and email, then test GlobalSign connection';
                     break;
                 case 'private_ca':
                     hintElement.textContent = 'Enter your ACME directory URL and email, then test Private CA connection';
@@ -2041,6 +2045,14 @@
             if (!sEabHmac.trim()) missingFields.push('EAB HMAC Key');
             if (!sEmail.trim()) missingFields.push('Email');
             config = { eab_key_id: sEabKid, eab_hmac_key: sEabHmac, email: sEmail };
+        } else if (caProvider === 'globalsign') {
+            var gsEabKid = document.getElementById('globalsign-eab-kid').value;
+            var gsEabHmac = document.getElementById('globalsign-eab-hmac').value;
+            var gsEmail = document.getElementById('globalsign-email').value;
+            if (!gsEabKid.trim()) missingFields.push('EAB Key ID');
+            if (!gsEabHmac.trim()) missingFields.push('EAB HMAC Key');
+            if (!gsEmail.trim()) missingFields.push('Email');
+            config = { eab_key_id: gsEabKid, eab_hmac_key: gsEabHmac, email: gsEmail };
         } else if (caProvider === 'digicert') {
             var dcAcmeUrl = document.getElementById('digicert-acme-url').value;
             var dcEabKid = document.getElementById('digicert-eab-kid').value;
@@ -2445,6 +2457,17 @@
             document.getElementById('sslcom-email').value = sslcomConfig.email;
         }
         // Don't populate HMAC key for security reasons - user needs to re-enter
+
+        // Load GlobalSign settings
+        var globalsignConfig = caProviders.globalsign || {};
+        if (globalsignConfig.eab_kid) {
+            document.getElementById('globalsign-eab-kid').value = globalsignConfig.eab_kid;
+        }
+        if (globalsignConfig.email) {
+            document.getElementById('globalsign-email').value = globalsignConfig.email;
+        }
+        // Don't populate HMAC key for security reasons - user needs to re-enter
+
         if (digicertConfig.email) {
             document.getElementById('digicert-email').value = digicertConfig.email;
         }
@@ -2584,6 +2607,13 @@
             eab_kid: document.getElementById('sslcom-eab-kid').value || '',
             eab_hmac: document.getElementById('sslcom-eab-hmac').value || '',
             email: document.getElementById('sslcom-email').value || ''
+        };
+
+        // GlobalSign configuration
+        caProviders.globalsign = {
+            eab_kid: document.getElementById('globalsign-eab-kid').value || '',
+            eab_hmac: document.getElementById('globalsign-eab-hmac').value || '',
+            email: document.getElementById('globalsign-email').value || ''
         };
 
         // Private CA configuration

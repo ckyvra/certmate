@@ -2768,7 +2768,7 @@ def create_api_resources(api, models, managers):
                             'acme_url': acme_url
                         }
 
-                    elif ca_provider in ('zerossl', 'google', 'sslcom', 'actalis'):
+                    elif ca_provider in ('zerossl', 'google', 'sslcom', 'actalis', 'globalsign'):
                         # Fixed-directory EAB CAs share one shape: the ACME
                         # URL is pinned in CAManager, so the test validates
                         # EAB credentials + email. Accept both field

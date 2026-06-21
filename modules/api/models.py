@@ -213,7 +213,7 @@ def create_api_models(api):
         'ca_provider': fields.String(description='CA provider (optional)',
                                      enum=['letsencrypt', 'letsencrypt_staging', 'zerossl',
                                            'google', 'digicert', 'sslcom',
-                                           'actalis', 'private_ca']),
+                                           'actalis', 'globalsign', 'private_ca']),
         'domain_alias': fields.String(description='Optional domain alias for DNS validation'),
         'key_type': fields.String(
             description=(
