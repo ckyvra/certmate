@@ -390,7 +390,8 @@
             'hetzner-cloud': ['hetzner-cloud_api_token'],
             'desec': ['desec_api_token'],
             'scaleway': ['scaleway_application_token'],
-            'custom-script': ['custom-script_auth_hook', 'custom-script_cleanup_hook']
+            'custom-script': ['custom-script_auth_hook', 'custom-script_cleanup_hook'],
+            'nsupdate': ['nsupdate_server', 'nsupdate_principal', 'nsupdate_keytab', 'nsupdate_nsupdate_cmd']
         };
 
         return fieldMappings[provider] || [];
@@ -598,6 +599,7 @@
             'porkbun', 'godaddy', 'he-ddns', 'dynudns', 'duckdns',
             'arvancloud', 'infomaniak', 'acme-dns', 'hetzner-cloud',
             'desec', 'scaleway',
+            'nsupdate',
             'custom-script'
         ];
 
@@ -893,6 +895,7 @@
             'dnsmadeeasy': 'DNS Made Easy',
             'nsone': 'NS1',
             'duckdns': 'DuckDNS',
+            'nsupdate': 'nsupdate / Kerberos',
             'custom-script': 'Custom Script'
         };
         modalTitle.textContent = 'Add ' + (providerNames[provider] || provider) + ' Account';
@@ -1152,6 +1155,12 @@
             'duckdns': [
                 { name: 'api_token', label: 'Account Token', type: 'password', placeholder: 'UUID-format token from your DuckDNS account page', required: true }
             ],
+            'nsupdate': [
+                { name: 'server', label: 'DNS Server', type: 'text', placeholder: 'ns1.example.com', required: true },
+                { name: 'principal', label: 'Kerberos Principal', type: 'text', placeholder: 'host/dns-server@EXAMPLE.COM', required: true },
+                { name: 'keytab', label: 'Keytab (base64)', type: 'password', placeholder: 'Base64-encoded Kerberos keytab', required: true, description: 'Paste the full base64 output (single line, no newlines)' },
+                { name: 'nsupdate_cmd', label: 'nsupdate Command (optional)', type: 'text', placeholder: 'nsupdate', required: false }
+            ],
             'custom-script': [
                 { name: 'auth_hook', label: 'Auth Hook Script Path', type: 'text', placeholder: '/usr/local/bin/certmate-dns-auth.sh', required: true },
                 { name: 'cleanup_hook', label: 'Cleanup Hook Script Path (optional)', type: 'text', placeholder: '/usr/local/bin/certmate-dns-cleanup.sh', required: false }
@@ -1160,6 +1169,20 @@
 
         var fields = fieldMappings[provider] || [];
         var html = '';
+
+        // Provider-specific info box
+        if (provider === 'nsupdate') {
+            html += (
+                '<div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md text-xs text-blue-700 dark:text-blue-300">' +
+                '<strong>Générer le keytab base64 :</strong><br>' +
+                '<code class="block mt-1 p-1 bg-blue-100 dark:bg-blue-900/40 rounded text-[11px] break-all">' +
+                'kinit -k -t /chemin/vers/keytab principal@REALM<br>' +
+                'base64 /chemin/vers/keytab | tr -d \'\\n\'' +
+                '</code>' +
+                '<span class="block mt-1">Collez le résultat dans le champ "Keytab (base64)" ci-dessous.</span>' +
+                '</div>'
+            );
+        }
 
         fields.forEach(function (field) {
             var value = escapeHtml(existingData[field.name] || field.defaultValue || '');
@@ -1184,6 +1207,10 @@
                 html += '<textarea id="' + fieldId + '" name="' + field.name + '" rows="4" class="mt-1 block w-full border border-border dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" placeholder="' + field.placeholder + '" ' + (field.required ? 'required' : '') + '>' + value + '</textarea>';
             } else {
                 html += '<input type="' + field.type + '" id="' + fieldId + '" name="' + field.name + '" class="mt-1 block w-full border border-border dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" placeholder="' + field.placeholder + '" value="' + value + '" ' + (field.required ? 'required' : '') + '>';
+            }
+
+            if (field.description) {
+                html += '<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">' + field.description + '</p>';
             }
 
             html += '</div>';

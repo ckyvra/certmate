@@ -74,7 +74,8 @@ _DNS_PROVIDER_CREDENTIALS = {
     'scaleway': ['application_token'],
     # Admin-supplied hook scripts (#286): the auth hook is the only hard
     # requirement; the cleanup hook is optional.
-    'custom-script': ['auth_hook']
+    'custom-script': ['auth_hook'],
+    'nsupdate': ['server', 'principal', 'keytab'],
 }
 
 # A mapping of multi-provider names to their certbot plugin .ini filename.
@@ -639,6 +640,29 @@ def create_acme_dns_config(api_url: str, username: str, password: str, subdomain
     }
     content = json.dumps(config, indent=4)
     return _create_config_file("acme-dns", content)
+
+def create_nsupdate_config(
+    server: str,
+    principal: str,
+    keytab: str,
+    nsupdate_cmd: str = 'nsupdate',
+) -> Path:
+    """Create nsupdate/Kerberos credentials file for certbot-dns-nsupdate.
+
+    The keytab value is a base64-encoded Kerberos keytab. The operator
+    generates it with::
+
+        kinit -k -t /path/to/keytab principal@REALM
+        base64 /path/to/keytab | tr -d '\\n'
+    """
+    content = (
+        f"dns_nsupdate_server = {server}\n"
+        f"dns_nsupdate_principal = {principal}\n"
+        f"dns_nsupdate_keytab = {keytab}\n"
+        f"dns_nsupdate_nsupdate_cmd = {nsupdate_cmd}\n"
+    )
+    return _create_config_file('nsupdate', content)
+
 
 def create_multi_provider_config(provider: str, config_data: Dict[str, Any]) -> Optional[Path]:
     """

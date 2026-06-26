@@ -1,0 +1,9 @@
+# nsupdate / Kerberos DNS provider (certbot-dns-nsupdate plugin)
+# Uses nsupdate with GSS-TSIG (RFC 2136 + RFC 3645) for ACME DNS-01 challenges.
+#
+# System packages required (install via apt-get / yum):
+#   bind9-dnsutils    (provides nsupdate)
+#   krb5-user         (provides kinit, kdestroy)
+#
+# Install (from repo root):
+#   pip install ./certbot-dns-nsupdate

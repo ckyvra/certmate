@@ -60,7 +60,7 @@ WORKDIR /app
 # apt-get upgrade pulls security patches for glibc, zlib, etc.
 RUN apt-get update && \
     apt-get upgrade -y -o Acquire::Retries=3 && \
-    apt-get install -y -o Acquire::Retries=3 bash curl tini && \
+    apt-get install -y -o Acquire::Retries=3 bash curl tini bind9-dnsutils krb5-user && \
     rm -rf /var/lib/apt/lists/* && \
     useradd --create-home --shell /bin/bash certmate
 
@@ -70,6 +70,15 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy application code
 COPY . .
+
+# Install optional bundled plugins (certbot-dns-nsupdate and others
+# that ship as local packages in the repository rather than on PyPI).
+RUN for plugin in certbot-dns-nsupdate; do \
+        if [ -d "${plugin}" ]; then \
+            echo "==> Installing local plugin: ${plugin}"; \
+            pip install --no-cache-dir "./${plugin}"; \
+        fi; \
+    done
 
 # Create necessary directories with proper permissions
 RUN mkdir -p certificates data logs backups && \

@@ -16,8 +16,8 @@ from .utils import (
     create_powerdns_config, create_digitalocean_config, create_linode_config,
     create_gandi_config, create_ovh_config, create_namecheap_config,
     create_arvancloud_config, create_infomaniak_config, create_acme_dns_config,
-    create_duckdns_config, create_edgedns_config, create_multi_provider_config,
-    _create_config_file
+    create_duckdns_config, create_edgedns_config, create_nsupdate_config,
+    create_multi_provider_config, _create_config_file
 )
 
 logger = logging.getLogger(__name__)
@@ -644,6 +644,41 @@ class HTTP01Strategy(DNSProviderStrategy):
         return 0  # No propagation needed for HTTP-01
 
 
+class NsupdateStrategy(DNSProviderStrategy):
+    """nsupdate / Kerberos DNS provider via certbot-dns-nsupdate plugin.
+
+    Uses nsupdate with GSS-TSIG (Kerberos) to manage DNS-01 challenge
+    TXT records, implementing RFC 2136 + RFC 3645.
+
+    Credentials:
+        * **server** — DNS server hostname
+        * **principal** — Kerberos principal
+        * **keytab** — base64-encoded Kerberos keytab
+        * **nsupdate_cmd** — path to nsupdate (default: nsupdate)
+
+    The keytab is generated with::
+
+        kinit -k -t /path/to/keytab principal@REALM
+        base64 /path/to/keytab | tr -d '\\n'
+    """
+
+    def create_config_file(self, config_data: Dict[str, Any]) -> Optional[Path]:
+        return create_nsupdate_config(
+            server=config_data.get('server', ''),
+            principal=config_data.get('principal', ''),
+            keytab=config_data.get('keytab', ''),
+            nsupdate_cmd=config_data.get('nsupdate_cmd', 'nsupdate'),
+        )
+
+    @property
+    def plugin_name(self) -> str:
+        return 'dns-nsupdate'
+
+    @property
+    def default_propagation_seconds(self) -> int:
+        return 60
+
+
 class DNSStrategyFactory:
     """Factory to get the correct strategy for a provider"""
 
@@ -664,6 +699,7 @@ class DNSStrategyFactory:
         'acme-dns': AcmeDNSStrategy,
         'duckdns': DuckDNSStrategy,
         'custom-script': CustomScriptStrategy,
+        'nsupdate': NsupdateStrategy,
         'http-01': HTTP01Strategy,
     }
     

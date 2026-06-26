@@ -150,6 +150,21 @@
                                         </div>
                                     </div>
                                 </label>
+                                <label class="relative">
+                                    <input type="radio" name="dns_provider" value="nsupdate" class="sr-only peer">
+                                    <div class="p-2 border-2 border-border rounded-lg cursor-pointer transition-all peer-checked:border-primary peer-checked:bg-blue-50 dark:bg-blue-900/20 dark:peer-checked:bg-blue-900/30 hover:border-border-strong">
+                                        <div class="text-center">
+                                            <i class="fas fa-key text-lg text-purple-600 mb-1"></i>
+                                            <div class="text-xs font-medium dark:text-white">nsupdate / Kerberos</div>
+                                            <div class="text-xs text-muted mt-1" id="nsupdate-status">Not configured</div>
+                                            <!-- Multi-account indicator -->
+                                            <div class="text-xs text-info-fg mt-1 hidden" id="nsupdate-accounts">
+                                                <i class="fas fa-users text-xs mr-1"></i>
+                                                <span id="nsupdate-account-count">0</span> accounts
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                         
@@ -1400,6 +1415,76 @@
                                     Create an API key with DNS zone and record management permissions in your
                                     <a href="https://my.nsone.net/" target="_blank" rel="noopener" class="text-primary hover:underline">NS1 (IBM NS1 Connect)</a> account settings.
                                 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- nsupdate / Kerberos Configuration -->
+                    <div id="nsupdate-config" class="dns-config hidden">
+                        <div class="border border-purple-200 dark:border-purple-600 rounded-lg p-4 bg-purple-50 dark:bg-purple-900/20">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-lg font-medium text-foreground">
+                                    <i class="fas fa-key mr-2 text-purple-600"></i>
+                                    nsupdate / Kerberos Configuration
+                                </h4>
+                                <button type="button" id="nsupdate-add-account" onclick="showAddAccountModal('nsupdate')"
+                                        class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    <i class="fas fa-plus mr-1"></i>
+                                    Add Account
+                                </button>
+                            </div>
+
+                            <div id="nsupdate-accounts-list" class="space-y-3 mb-4">
+                                <!-- Accounts will be populated here -->
+                            </div>
+
+                            <!-- Legacy single account fields (hidden when multi-account mode is active) -->
+                            <div id="nsupdate-legacy-config">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="nsupdate_server" class="block text-sm font-medium text-label">
+                                            DNS Server
+                                        </label>
+                                        <input type="text" id="nsupdate_server" name="nsupdate_server"
+                                               class="mt-1 block w-full border border-border dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                                               placeholder="ns1.example.com">
+                                    </div>
+                                    <div>
+                                        <label for="nsupdate_principal" class="block text-sm font-medium text-label">
+                                            Kerberos Principal
+                                        </label>
+                                        <input type="text" id="nsupdate_principal" name="nsupdate_principal"
+                                               class="mt-1 block w-full border border-border dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                                               placeholder="host/dns-server@EXAMPLE.COM">
+                                    </div>
+                                    <div>
+                                        <label for="nsupdate_keytab" class="block text-sm font-medium text-label">
+                                            Keytab (base64)
+                                        </label>
+                                        <input type="password" id="nsupdate_keytab" name="nsupdate_keytab"
+                                               class="mt-1 block w-full border border-border dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                                               placeholder="Base64-encoded Kerberos keytab"
+                                               autocomplete="new-password" spellcheck="false" data-lpignore="true">
+                                    </div>
+                                    <div>
+                                        <label for="nsupdate_nsupdate_cmd" class="block text-sm font-medium text-label">
+                                            nsupdate Command (optional)
+                                        </label>
+                                        <input type="text" id="nsupdate_nsupdate_cmd" name="nsupdate_nsupdate_cmd"
+                                               class="mt-1 block w-full border border-border dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                                               placeholder="nsupdate">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 p-3 rounded-md bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-700 text-sm text-gray-700 dark:text-gray-200">
+                                <p class="font-medium mb-1"><i class="fas fa-info-circle mr-1"></i> Generating the base64 keytab</p>
+                                <code class="block mt-1 p-2 bg-purple-200 dark:bg-purple-900/50 rounded text-xs break-all">
+                                    kinit -k -t /path/to/keytab principal@REALM<br>
+                                    base64 /path/to/keytab | tr -d '\n'
+                                </code>
+                                <p class="mt-2">Paste the output (single line, no line breaks) into the "Keytab (base64)" field.</p>
+                                <p class="mt-1">Requires <strong>nsupdate</strong> (bind9-dnsutils / bind9-utils) and <strong>kinit</strong> (krb5-user / krb5-workstation) installed on the server.</p>
                             </div>
                         </div>
                     </div>

@@ -114,6 +114,21 @@ def create_api_models(api):
         'host': fields.String(description='Akamai EdgeGrid host (e.g. akab-xxx.luna.akamaiapis.net)')
     })
 
+    nsupdate_model = api.model('NsupdateConfig', {
+        'server': fields.String(description='DNS server hostname (e.g. ns1.example.com)'),
+        'principal': fields.String(description='Kerberos principal (e.g. host/dns-server@EXAMPLE.COM)'),
+        'keytab': MaskedString(
+            description=(
+                'Base64-encoded Kerberos keytab. '
+                'Generate with: kinit -k -t keytab principal && base64 keytab | tr -d "\\n"'
+            )
+        ),
+        'nsupdate_cmd': fields.String(
+            description='Path to nsupdate command (default: nsupdate)',
+            required=False
+        )
+    })
+
     # multi_provider_model removed as it is now flexible
 
     dns_providers_model = api.model('DNSProviders', {
@@ -139,6 +154,7 @@ def create_api_models(api):
         'arvancloud': fields.Nested(arvancloud_model),
         'acme-dns': fields.Nested(acme_dns_model),
         'duckdns': fields.Nested(duckdns_model),
+        'nsupdate': fields.Nested(nsupdate_model),
         'edgedns': fields.Nested(edgedns_model),
         # Support for any other provider via certbot-dns-multi
         'multi': fields.Raw(description='Configuration for any DNS provider via certbot-dns-multi')
